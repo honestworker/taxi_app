@@ -52,3 +52,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+/* 
+| -------------------------------------------------------------------------
+| Backend
+| -------------------------------------------------------------------------
+*/
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+// Login & Signup
+if ($method == 'GET' || $method == 'POST') {
+    $route['login'] = 'auth';
+    $route['signup'] = 'auth/signup';
+}
+if ($method == 'GET') {
+    $route['logout'] = 'auth/logout';
+    $route['activate/(:any)'] = 'auth/activate/$1';
+}
+
+// Admin
+if ($method == 'GET') {
+    $route['admin/dashboard'] = 'admin';
+}
+
+/* 
+| -------------------------------------------------------------------------
+| APP API
+| -------------------------------------------------------------------------
+*/
+
+if ($method == 'POST') {
+    $route['api/signup'] = 'api/signup';
+    $route['api/login'] = 'api/login';
+    $route['api/logout'] = 'api/logout';
+
+    $route['api/email_verify_code'] = 'api/emailVerifyCode';
+    $route['api/email_verify'] = 'api/emailVerify';
+    $route['api/update_position'] = 'api/updatePosition';
+    $route['api/sms_verify_code'] = 'api/smsVerifyCode';
+    $route['api/sms_verify'] = 'api/smsVerify';
+}
