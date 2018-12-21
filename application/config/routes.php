@@ -87,9 +87,16 @@ if ($method == 'POST') {
     $route['api/login'] = 'api/login';
     $route['api/logout'] = 'api/logout';
 
-    $route['api/email_verify_code'] = 'api/emailVerifyCode';
+    //$route['api/email_verify_code'] = 'api/emailVerifyCode';
     $route['api/email_verify'] = 'api/emailVerify';
     $route['api/update_position'] = 'api/updatePosition';
     $route['api/sms_verify_code'] = 'api/smsVerifyCode';
     $route['api/sms_verify'] = 'api/smsVerify';
+    $route['api/change_email_code'] = 'api/changeEmailCode';
+    $route['api/change_email'] = 'api/changeEmail';
+    $route['api/change_sms_code'] = 'api/changeSmsCode';
+    $route['api/change_sms'] = 'api/changeSms';
+    
+    $route['api/forgot_password'] = 'api/forgotPassword';
+    $route['api/change_password'] = 'api/changePassword';
 }

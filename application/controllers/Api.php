@@ -26,32 +26,46 @@ class Api extends CI_Controller {
     }
 
     public function login() {
+        $this->form_validation->set_rules('type', 'Type', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[255]');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
+        }
+
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit();
         }
         
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
         $user_data = array(
+            'role'			    => $role,
             'email'			    => strip_tags(trim($this->input->post('email'))),
             'password'		    => strip_tags(trim($this->input->post('password'))),
         );
         $result = $this->Auth_Model->login($user_data);
-        if ( $result == 0 ) {
+        if ( $result['error_type'] == 0 ) {
             $this->response['status'] = 'success';
             $this->response['data'] = $result['token'];
             $this->response['error_type'] = '';
-        } else if ( $result == -1 ) {
+        } else if ( $result['error_type'] == -1 ) {
             $this->response['error_type'] = 'no_activated';
-        } else if ( $result == -2 ) {
+        } else if ( $result['error_type'] == -2 ) {
             $this->response['error_type'] = 'wrong_password';
-        } else if ( $result == -3 ) {
+        } else if ( $result['error_type'] == -3 ) {
             $this->response['error_type'] = 'no_profile';
-        } else if ( $result == -4 ) {
+        } else if ( $result['error_type'] == -4 ) {
             $this->response['error_type'] = 'no_user';
         }
         
         echo json_encode($this->response);
+        exit();
     }
 
     public function signup() {
@@ -64,10 +78,13 @@ class Api extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
         }
 
         if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
             echo json_encode($this->response);
+            exit();
         }
         
         if ( isset( $_FILES['images'] ) ) {
@@ -77,6 +94,7 @@ class Api extends CI_Controller {
                         $this->response['error_type'] = 'image_upload_error';
                         $this->response['message'] = 'You did not upload images correctly, please try again.';
                         echo json_encode($this->response);
+                        exit();
                     }
                 }
                 foreach ( $_FILES['images']['type'] as $key => $type ) {
@@ -116,6 +134,7 @@ class Api extends CI_Controller {
         }
 
         echo json_encode($this->response);
+        exit();
     }
 
     public function logout() {
@@ -126,12 +145,14 @@ class Api extends CI_Controller {
         
         $this->Auth_Model->logout(strip_tags(trim($this->input->post('token'))));
         if ( $result == 0 ) {
+            $this->response['status'] = 'success';
             $this->response['error_type'] = '';
         } else if ( $result == -1 ) {
             $this->response['error_type'] = 'token_error';
         }
 
         echo json_encode($this->response);
+        exit();
     }
 
     public function emailVerifyCode() {
@@ -139,21 +160,29 @@ class Api extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
         }
 
         if ( $this->input->post('type') != 'driver' && $this->input->post('type') != 'user' ) {
             $this->response['error_type'] = 'no_type';
             echo json_encode($this->response);
+            exit();
         }
         
-        $result = $this->User_Model->emailVerifyCode(strip_tags(trim($this->input->post('type'))), strip_tags(trim($this->input->post('email'))));
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->emailVerifyCode($role, strip_tags(trim($this->input->post('email'))));
         if ( $result == 0 ) {
+            $this->response['status'] = 'success';
             $this->response['error_type'] = '';
         } else if ( $result == -1 ) {
             $this->response['error_type'] = 'no_user';
         }
 
         echo json_encode($this->response);
+        exit();
     }
 
     public function emailVerify() {
@@ -162,15 +191,22 @@ class Api extends CI_Controller {
         $this->form_validation->set_rules('code', 'Code', 'trim|required');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
         }
         
         if ( $this->input->post('type') != 'driver' && $this->input->post('type') != 'user' ) {
             $this->response['error_type'] = 'no_type';
             echo json_encode($this->response);
+            exit();
         }
 
-        $result = $this->User_Model->emailVerifyCode(strip_tags(trim($this->input->post('type'))), strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('code'))));
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->emailVerify($role, strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('code'))));
         if ( $result == 0 ) {
+            $this->response['status'] = 'success';
             $this->response['error_type'] = '';
         } else if ( $result == -1 ) {
             $this->response['error_type'] = 'error_code';
@@ -181,6 +217,7 @@ class Api extends CI_Controller {
         }
 
         echo json_encode($this->response);
+        exit();
     }
 
     public function updatePosition() {
@@ -189,16 +226,19 @@ class Api extends CI_Controller {
         $this->form_validation->set_rules('token', 'Token', 'trim|required');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
         }
         
         $result = $this->User_Model->updatePosition(strip_tags(trim($this->input->post('latitude'))), strip_tags(trim($this->input->post('longitude'))), strip_tags(trim($this->input->post('token'))));
         if ( $result == 0 ) {
+            $this->response['status'] = 'success';
             $this->response['error_type'] = '';
         } else if ( $result == -1 ) {
             $this->response['error_type'] = 'token_error';
         }
 
-        echo json_encode($this->response);        
+        echo json_encode($this->response);
+        exit();
     }
 
     public function smsVerifyCode() {
@@ -207,18 +247,32 @@ class Api extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
         }
         
-        $result = $this->User_Model->smsVerifyCode(strip_tags(trim($this->input->post('type'))), strip_tags(trim($this->input->post('phone_number'))), strip_tags(trim($this->input->post('email'))));
-        if ( $result == 0 ) {
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit();
+        }
+
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->smsVerifyCode($role, strip_tags(trim($this->input->post('phone_number'))), strip_tags(trim($this->input->post('email'))));
+        if ( $result['error_type'] == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['data'] = $result['data'];
             $this->response['error_type'] = '';
-        } else if ( $result == -1 ) {
+        } else if ( $result['error_type'] == -1 ) {
             $this->response['error_type'] = 'no_profile';
-        } else if ( $result == -2 ) {
+        } else if ( $result['error_type'] == -2 ) {
             $this->response['error_type'] = 'no_user';
         }
 
-        echo json_encode($this->response);       
+        echo json_encode($this->response);
+        exit();
     }
 
     public function smsVerify() {
@@ -228,10 +282,22 @@ class Api extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         if ($this->form_validation->run() == false) {
             echo json_encode($this->response);
+            exit();
+        }
+
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit();
         }
         
-        $result = $this->User_Model->smsVerify(strip_tags(trim($this->input->post('type'))), strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('phone_number'))), strip_tags(trim($this->input->post('code'))));
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->smsVerify($role, strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('phone_number'))), strip_tags(trim($this->input->post('code'))));
         if ( $result == 0 ) {
+            $this->response['status'] = 'success';
             $this->response['error_type'] = '';
         } else if ( $result == -1 ) {
             $this->response['error_type'] = 'error_code';
@@ -244,6 +310,165 @@ class Api extends CI_Controller {
         }
 
         echo json_encode($this->response);
+        exit();
+    }
+    
+    public function changeEmailCode() {
+        $this->form_validation->set_rules('token', 'Token', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
+
+        $result = $this->User_Model->changeEmailCode(strip_tags(trim($this->input->post('token'))), strip_tags(trim($this->input->post('email'))));
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'token_error';
+        }
+
+        echo json_encode($this->response);
+        exit();
+    }
+
+    public function changeEmail() {
+        $this->form_validation->set_rules('token', 'Token', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('code', 'Code', 'trim|required');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
         
+        $result = $this->User_Model->changeEmail(strip_tags(trim($this->input->post('token'))), strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('code'))));
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'error_code';
+        } else if ( $result == -2 ) {
+            $this->response['error_type'] = 'no_profile';
+        } else if ( $result == -3 ) {
+            $this->response['error_type'] = 'token_error';
+        }
+
+        echo json_encode($this->response);
+        exit();
+    }
+
+    public function changeSmsCode() {
+        $this->form_validation->set_rules('token', 'Token', 'trim|required');
+        $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
+        
+        $result = $this->User_Model->changeSmsCode(strip_tags(trim($this->input->post('token'))), strip_tags(trim($this->input->post('phone_number'))));
+        if ( $result['error_type'] == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['data'] = $result['data'];
+            $this->response['error_type'] = '';
+        } else if ( $result['error_type'] == -1 ) {
+            $this->response['error_type'] = 'no_profile';
+        } else if ( $result['error_type'] == -2 ) {
+            $this->response['error_type'] = 'token_error';
+        }
+
+        echo json_encode($this->response);
+        exit();
+    }
+
+    public function changeSms() {
+        $this->form_validation->set_rules('token', 'Token', 'trim|required');
+        $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required');
+        $this->form_validation->set_rules('code', 'Code', 'trim|required');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
+
+        $result = $this->User_Model->changeSms(strip_tags(trim($this->input->post('token'))), strip_tags(trim($this->input->post('phone_number'))), strip_tags(trim($this->input->post('code'))));
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'error_code';
+        } else if ( $result == -2 ) {
+            $this->response['error_type'] = 'no_profile';
+        } else if ( $result == -3 ) {
+            $this->response['error_type'] = 'token_error';
+        }
+
+        echo json_encode($this->response);
+        exit();
+    }
+    
+    public function forgotPassword() {
+        $this->form_validation->set_rules('type', 'Type', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
+
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit();
+        }
+        
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->forgotPassword($role, strip_tags(trim($this->input->post('email'))));
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'no_profile';
+        } else if ( $result == -2 ) {
+            $this->response['error_type'] = 'no_user';
+        }
+
+        echo json_encode($this->response);
+        exit();
+    }
+
+    public function changePassword() {
+        $this->form_validation->set_rules('type', 'Type', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[255]');
+        $this->form_validation->set_rules('code', 'Code', 'trim|required');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit();
+        }
+
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit();
+        }
+        
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->changePassword($role, strip_tags(trim($this->input->post('email'))), strip_tags(trim($this->input->post('password'))), strip_tags(trim($this->input->post('code'))));
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'error_code';
+        } else if ( $result == -2 ) {
+            $this->response['error_type'] = 'no_user';
+        }
+
+        echo json_encode($this->response);
+        exit();
     }
 }

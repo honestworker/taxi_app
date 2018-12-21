@@ -36,8 +36,9 @@ class Auth extends CI_Controller {
             $user_data = array(
                 'email'			    => strip_tags(trim($this->input->post('email'))),
                 'password'		    => strip_tags(trim($this->input->post('password'))),
+                'role'              => 1,
             );
-            $result = $this->Auth_Model->login($user_data, 1);
+            $result = $this->Auth_Model->login($user_data);
             if ( $result['error_type'] == 0 ) {
                 $flash_data['alerts']['success'][] = 'Successfully login.';
             } else if ( $result['error_type'] == -1 ) {

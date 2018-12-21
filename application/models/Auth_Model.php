@@ -15,7 +15,9 @@ class Auth_Model extends CI_Model {
         if ( $type == 'light' ) {
             $char_seed = '0123456789';
         } else if ( $type == 'middle' ) {
-            $char_seed = 'bcgZMEPhlnXQoziy@#CVWJmepxqakRAF!GHLNODTUstuvwjS%fBdrKIY';
+            $char_seed = 'bcgZMEPhlnXQoziy@#CVWJmepxqakRAF!GHLNODTUstuvwjSfBdrKIY';
+        } else if ( $type == 'common' ) {
+            $char_seed = 'bcgZMEPhlnXQoziyCVWJmepxqakRAFGHLNODTUstuvwjSfBdrKIY';
         }
         
         $chars_len = strlen($char_seed);
@@ -32,49 +34,106 @@ class Auth_Model extends CI_Model {
         $this->email->to( $email );
         $this->email->subject( 'Please activate your account.' );
         $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please activate your account.<br/>Linke here: " . base_url() . 'activate/'. $code . "<br/><br/>Thank you.");
+        $this->email->set_mailtype('html');
         $this->email->send();
     }
 	
+    private function sendEmailVerifyCode( $email, $name, $code ) {
+        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
+        $this->email->to( $email );
+        $this->email->subject( 'Please verify your email.' );
+        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Verification Code: " . $code . "<br/><br/>Thank you.");
+        $this->email->set_mailtype('html');
+        $this->email->send();
+    }
+
     public function createUser( $data ) {
         $response = array(
             'user' => null,
             'error_type' => -2
         );
-        $user_id = 0;
-		if ( $user = $this->db->get_where('users', array('email' => $data['email'], 'role' => $data['role']))->result() ) {
-            $response['error_type'] = -1; // Already registed
-            return $response;
-        }
+		if ( $user_row = $this->db->get_where('users', array('email' => $data['email'], 'role' => $data['role']))->result() ) {
+            $user = $user_row[0];
+            if ($user->status == 'activated') {
+                $response['error_type'] = -1; // Already registed
+                return $response;
+            }
 
-        $salt = $this->generate_token(10, 'middle');
-        $user_data = array(
-            'email'			    => $data['email'],
-			'role'			    => $data['role'],
-            'salt'			    => $salt,
-            'password'		    => md5($data['password'] . $salt),
-            'status'		    => 'registed',
-			'created_at'	    => date('Y-m-d H:i:s'),
-			'updated_at'	    => date('Y-m-d H:i:s'),
-        );
-        
-		if ( $this->db->insert('users', $user_data) ) {
-            $user_id = $this->db->insert_id();
-            
-            $profile_data = array(
-                'user_id'		=> $user_id,
-                'first_name'	=> $data['first_name'],
-                'last_name'     => $data['last_name'],
-                'created_at'	=> date('Y-m-d H:i:s'),
-                'updated_at'	=> date('Y-m-d H:i:s'),
+		    if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
+                $profile = $profile_row[0];
+                $this->db->update('profile', array('first_name' => $data['first_name'], 'last_name' => $data['last_name'], 'updated_at' => date('Y-m-d H:i:s')), array('id' => $profile->id) );
+            } else {
+                $profile_data = array(
+                    'user_id'		=> $user->id,
+                    'first_name'	=> $data['first_name'],
+                    'last_name'     => $data['last_name'],
+                    'created_at'	=> date('Y-m-d H:i:s'),
+                    'updated_at'	=> date('Y-m-d H:i:s'),
+                );
+                $this->db->insert('profile', $profile_data);
+            }
+            $salt = $this->generate_token(10, 'middle');
+            $this->db->update('users', array('salt' => $salt, 'password' => md5($data['password'] . $salt)), array('id' => $user->id) );
+
+            $code = $this->generate_token(5, 'light');
+            $this->db->update('users', array('email_code' => $code), array('id' => $user->id) );
+            $this->sendEmailVerifyCode($user->email, $data['first_name'], $code);
+
+            $response['error_type'] = 0;
+            $response['user'] = array(
+                'email'			    => $user->email,
+                'first_name'		=> $data['first_name'],
+                'last_name'		    => $data['last_name'],
+                'created_at'	    => $user->created_at,
             );
-
-            if ( $this->db->insert('profile', $profile_data) ) {
-                if ( $user_row = $this->db->get_where('users', array('id' => $user_id))->result() ) {
-                    $response['user'] = $user_row[0];
-                    return $response;
+            return $response;
+        } else {
+            $salt = $this->generate_token(10, 'middle');
+            $user_data = array(
+                'email'			    => $data['email'],
+                'role'			    => $data['role'],
+                'salt'			    => $salt,
+                'password'		    => md5($data['password'] . $salt),
+                'status'		    => 'registed',
+                'created_at'	    => date('Y-m-d H:i:s'),
+                'updated_at'	    => date('Y-m-d H:i:s'),
+            );
+            
+            if ( $this->db->insert('users', $user_data) ) {
+                $user_id = $this->db->insert_id();
+                
+                $profile_data = array(
+                    'user_id'		=> $user_id,
+                    'first_name'	=> $data['first_name'],
+                    'last_name'     => $data['last_name'],
+                    'created_at'	=> date('Y-m-d H:i:s'),
+                    'updated_at'	=> date('Y-m-d H:i:s'),
+                );
+    
+                if ( $this->db->insert('profile', $profile_data) ) {
+                    if ( $user_row = $this->db->get_where('users', array('id' => $user_id))->result() ) {
+                        $user = $user_row[0];
+                        if ($data['role'] == 2 || $data['role'] == 3) {
+                            $code = $this->generate_token(5, 'light');
+                            $this->db->update('users', array('email_code' => $code), array('id' => $user->id) );
+                            $this->sendEmailVerifyCode($user->email, $data['first_name'], $code);
+                        } else if ($data['role'] == 1) {
+                            $code = $this->generate_token(50, 'common');
+                            $this->db->update('users', array('activation_code' => $code), array('id' => $user->id) );
+                            $this->sendActivateCode($user->email, $data['first_name'], $code);
+                        }
+                        $response['error_type'] = 0;
+                        $response['user'] = array(
+                            'email'			    => $user->email,
+                            'first_name'		=> $data['first_name'],
+                            'last_name'		    => $data['last_name'],
+                            'created_at'	    => $user->created_at,
+                        );
+                        return $response;
+                    }
                 }
             }
-		}        
+        }
 
         return $response;
     }
@@ -107,15 +166,14 @@ class Auth_Model extends CI_Model {
         return 0;
     }
 
-    public function login( $data, $role ) {
+    public function login( $data ) {
         $response = array(
             'token' => '',
             'error_type' => -4 // No user
         );
         
-		if ( $user_row = $this->db->get_where('users', array('email' => $data['email'], 'role' => $role) )->result() ) {
+		if ( $user_row = $this->db->get_where('users', array('email' => $data['email'], 'role' => $data['role']) )->result() ) {
             $user = $user_row[0];
-            print_r($user->password . ":" . $data['password'] . ":" .  $user->salt. ":" . md5($data['password'] . $user->salt));
             if ( $user->password == md5($data['password'] . $user->salt) ) {
                 if ( $user->status  != 'activated' ) {
                     $response['error_type'] = -1; // No activated
@@ -129,7 +187,7 @@ class Auth_Model extends CI_Model {
             if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
                 $profile = $profile_row[0];
                 $response['error_type'] = 0; // OK
-                if ($role == 1) {
+                if ( $data['role'] == 1) {
                     if ( $profile->avatar ) {
                         $this->session->set_userdata('avatar', $profile->avatar);
                     } else {
@@ -141,7 +199,7 @@ class Auth_Model extends CI_Model {
                     $this->session->set_userdata('email', $user->email);
                 } else {                    
                     $token = $this->generate_token(50, 'middle');
-                    $this->db->update('user', array('token' => $token), array('user_id' => $user->id) );
+                    $this->db->update('users', array('token' => $token), array('id' => $user->id) );
                     $response['token'] = $token;
                     return $response;
                 }
@@ -157,7 +215,7 @@ class Auth_Model extends CI_Model {
     public function logout( $token ) {
 		if ( $user_row = $this->db->get_where('users', array('token' => $token) )->result() ) {
             $user = $user_row[0];
-            $this->db->update('user', array('token' => ''), array('user_id' => $user->id) );
+            $this->db->update('users', array('token' => ''), array('id' => $user->id) );
             return 0;
         }
         return -1;
