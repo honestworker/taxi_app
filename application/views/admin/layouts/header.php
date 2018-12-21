@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo base_url();?>assets/custom/images/favicon-96x96.png">
     <title><?php echo APP_NAME;?> | Dashboard</title>
 
     <!-- Tell the browser to be responsive to screen width -->
@@ -13,6 +14,8 @@
     <link rel="stylesheet" href="<?php echo base_url();?>assets/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="<?php echo base_url();?>assets/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/AdminLTE.min.css">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -45,11 +48,12 @@
 <div class="wrapper">
     <header class="main-header">
         <!-- Logo -->
-        <a href="<?php echo base_url();?>/admin/dashboard" class="logo">
+        <a href="<?php echo base_url();?>/dashboard" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><b>A</b>LT</span>
+            <span class="logo-mini"><b>Dashboard</b></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>Admin</b>LTE</span>
+            <span class="logo-lg"><b>Dashboard</b></span>
+            <input type="hidden" id="base_url" value="<?php echo base_url(); ?>">
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
@@ -83,10 +87,6 @@
                                 </div>
                             </li>
                         </ul>
-                    </li>
-                    <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                     </li>
                 </ul>
             </div>

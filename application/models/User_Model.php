@@ -16,6 +16,8 @@ class User_Model extends CI_Model {
             $char_seed = '0123456789';
         } else if ( $type == 'middle' ) {
             $char_seed = 'bcgZMEPhlnXQoziy@#CVWJmepxqakRAF!GHLNODTUstuvwjS%fBdrKIY';
+        } else if ( $type == 'common' ) {
+            $char_seed = 'bcgZMEPhlnXQoziyCVWJmepxqakRAFGHLNODTUstuvwjSfBdrKIY';
         }
         
         $chars_len = strlen($char_seed);
@@ -27,11 +29,20 @@ class User_Model extends CI_Model {
         return $ret;
     }
 
-    private function sendActivateCode( $email, $name, $code ) {
+    private function sendActiveCode( $email, $name, $code ) {
         $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
         $this->email->to( $email );
-        $this->email->subject( 'Please activate your account.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please activate your account.<br/>Linke here: " . base_url() . 'activate/'. $code . "<br/><br/>Thank you.");
+        $this->email->subject( 'Please active your account.' );
+        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please active your account.<br/>Linke here: " . base_url() . 'active/'. $code . "<br/><br/>Thank you.");
+        $this->email->set_mailtype('html');
+        $this->email->send();
+    }
+
+    private function sendChangePasswordCode( $email, $name, $code ) {
+        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
+        $this->email->to( $email );
+        $this->email->subject( 'Please change your password.' );
+        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please change your password.<br/>Linke here: " . base_url() . 'change/'. $code . "<br/><br/>Thank you.");
         $this->email->set_mailtype('html');
         $this->email->send();
     }
@@ -44,6 +55,16 @@ class User_Model extends CI_Model {
         $this->email->set_mailtype('html');
         $this->email->send();
     }
+
+    private function sendForgotCode( $email, $name, $code ) {
+        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
+        $this->email->to( $email );
+        $this->email->subject( 'Please change your password.' );
+        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Verification Code: " . $code . "<br/><br/>Thank you.");
+        $this->email->set_mailtype('html');
+        $this->email->send();
+    }
+
 
     private function sendSMSCode($phone_number, $code) {
         $url = 'https://rest.nexmo.com/sms/json?' . http_build_query(
@@ -215,7 +236,7 @@ class User_Model extends CI_Model {
                 return -1;
             }
 
-		    if ( $profile_row = $this->db->get_where('profile', array('id' => $user->id) )->result() ) {
+		    if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
                 $profile = $profile_row[0];
                 $this->db->update('profile', array('phone_confirmed' => 1, 'phone_number' => $phone_number), array('id' => $profile->id) );
                 return 0;
@@ -231,10 +252,19 @@ class User_Model extends CI_Model {
 		if ( $user_row = $this->db->get_where('users', array('email' => $email, 'role' => $role) )->result() ) {
             $user = $user_row[0];
             $code = $this->generate_token(5, 'light');
+            $this->db->update('users', array('password_code' => $code), array('id' => $user->id) );
             
 		    if ( $profile_row = $this->db->get_where('profile', array('id' => $user->id) )->result() ) {
                 $profile = $profile_row[0];
-                $this->sendEmailVerifyCode($email, $profile->first_name, $code);
+                if ($user->role == 1) {
+                    $code = $this->generate_token(50, 'common');
+                    $this->db->update('users', array('password_code' => $code), array('id' => $user->id) );
+                    $this->sendChangePasswordCode($email, $profile->first_name, $code);
+                } else {
+                    $code = $this->generate_token(5, 'light');
+                    $this->db->update('users', array('password_code' => $code), array('id' => $user->id) );
+                    $this->sendForgotCode($email, $profile->first_name, $code);
+                }
                 return 0;
             } else {
                 return -1;
@@ -248,14 +278,148 @@ class User_Model extends CI_Model {
     public function changePassword( $role, $email, $password, $code ) {
 		if ( $user_row = $this->db->get_where('users', array('email' => $email, 'role' => $role) )->result() ) {
             $user = $user_row[0];
-            if ( $user->email_code != $code ) {
+            if ( $user->password_code != $code ) {
                 return -1;
             }
 
+            $this->db->update('users', array('password_code' => ''), array('id' => $user->id) );
             $salt = $this->generate_token(10, 'middle');
-            $this->db->update('users', array('slat' => $salt, 'password' => md5($password . $salt)), array('id' => $user->id) );
+            $this->db->update('users', array('salt' => $salt, 'password' => md5($password . $salt)), array('id' => $user->id) );
+            return 0;
+        }
+
+        return -2;
+    }
+    
+    public function changeAdminPassword( $code, $password ) {
+		if ( $user_row = $this->db->get_where('users', array('password_code' => $code, 'role' => 1) )->result() ) {
+            $user = $user_row[0];
+
+            $this->db->update('users', array('password_code' => ''), array('id' => $user->id) );
+            $salt = $this->generate_token(10, 'middle');
+            $this->db->update('users', array('salt' => $salt, 'password' => md5($password . $salt)), array('id' => $user->id) );
+            return 0;
+        }
+
+        return -1;
+    }
+    
+    public function activePassword( $code ) {
+		if ( $user_row = $this->db->get_where('users', array('password_code' => $code, 'role' => 1) )->result() ) {
+            $user = $user_row[0];
+
+            $this->db->update('users', array('password_code' => ''), array('id' => $user->id) );
+            $salt = $this->generate_token(10, 'middle');
+            $this->db->update('users', array('salt' => $salt, 'password' => md5($password . $salt)), array('id' => $user->id) );
+            return 0;
+        }
+    }
+
+    /*
+    *  Get user counts by according the user role
+    */
+    public function getUserCounts() {
+        $result = array(
+            'admins' => 0,
+            'drivers' => 0,
+            'users' => 0,
+        );
+        $user_rows = $this->db->get_where('users', array('role' => 1) )->result();
+        if ($user_rows) {
+            $result['admins'] = count($user_rows);
+        }
+        $user_rows = $this->db->get_where('users', array('role' => 2) )->result();
+        if ($user_rows) {
+            $result['drivers'] = count($user_rows);
+        }
+        $user_rows = $this->db->get_where('users', array('role' => 3) )->result();
+        if ($user_rows) {
+            $result['users'] = count($user_rows);
+        }
+        return $result;
+    }
+
+    /*
+    *  Get all users by according the user role
+    */
+    public function getUsers($role) {
+        $this->db->select('ut.id, ut.email, ut.status, pt.first_name, pt.last_name, pt.avatar, pt.phone_number, pt.phone_confirmed, pt.email_confirmed, ut.created_at'); // Select field
+        $this->db->from('users as ut');
+        if ($role) {
+            $this->db->where('ut.role', $role);
+        }
+        $this->db->join('profile as pt', 'ut.id = pt.user_id','INNER');
+        $this->db->order_by('ut.created_at', 'DESC');
+        $users = $this->db->get()->result();
+        
+        return $users;
+    }
+
+    /*
+    *  Active User
+    */
+    public function activeUser($user_id) {
+		if ( $user_row = $this->db->get_where('users', array('id' => $user_id) )->result() ) {
+            $user = $user_row[0];
+            if ( $user->status == 'activated' ) {
+                return -1;
+            }
+            if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
+                $profile = $profile_row[0];
+                if ( $user->role == 1 ) {
+                    $code = $this->generate_token(50, 'common');
+                    $this->db->update('users', array('activation_code' => $code), array('id' => $user->id) );
+                    $this->sendActiveCode($user->email, $profile->first_name, $code);
+                    return 0;
+                } else {
+                    if ( $profile->email_confirmed && $profile->phone_confirmed ) {
+                        $this->db->update('users', array('status' => 'activated'), array('id' => $user->id) );
+                        return 0;
+                    } else {
+                        if ( $user->status == 'registered' ) {
+                            return -1;
+                        } else {
+                            $this->db->update('users', array('status' => 'registered'), array('id' => $user->id) );
+                            return 0;
+                        }
+                    }
+                }
+            } else {
+                return -2;
+            }
         }
 
         return -3;
     }
+
+    /*
+    *  Disable User
+    */
+    public function disableUser($user_id) {
+		if ( $user_row = $this->db->get_where('users', array('id' => $user_id) )->result() ) {
+            $user = $user_row[0];
+            if ($user->status == 'disabled') {
+                return -1;
+            }
+            $this->db->update('users', array('status' => 'disabled'), array('id' => $user_id));
+            return 0;
+        }
+        return -2;
+    }
+
+    /*
+    *  Delete User
+    */
+    public function deleteUser($user_id) {
+		if ( $user_row = $this->db->get_where('users', array('id' => $user_id) )->result() ) {
+            $user = $user_row[0];
+            if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
+                $profile = $profile_row[0];
+                $this->db->delete('profile', array('id' => $profile->id));
+            }
+            $this->db->delete('users', array('id' => $user->id));
+        }
+
+        return -1;
+    }    
 }

@@ -1,9 +1,4 @@
 <div class="register-box">
-    <div class="register-logo">
-        <img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/logo.png">
-        <p><b>Sign Up</b></p>
-    </div>
-
 	<?php
 		$flash_data = $this->session->flashdata('flash_data');
 		if ( !empty( $flash_data ) ) {
@@ -16,7 +11,9 @@
 	?>
 
     <div class="register-box-body">
-        <p class="login-box-msg">Register a new membership</p>
+        <div class="register-logo">
+            <img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/icon.jpg">
+        </div>
         <form action="<?php echo site_url('signup');?>" method="post">
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" name="first_name" placeholder="First name">
@@ -40,15 +37,10 @@
             </div>
             <div class="row">
                 <div class="col-xs-8">
-                    <div class="checkbox icheck">
-                        <label>
-                            <input type="checkbox"> I agree to the <a href="#">terms</a>
-                        </label>
-                    </div>
                 </div>
                 <!-- /.col -->
                 <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">Sign Up</button>
                 </div>
                 <!-- /.col -->
             </div>
@@ -62,7 +54,7 @@
         <!--Google+</a>-->
         <!--</div> -->
         
-        <a href="<?php echo site_url('login');?>" class="text-center">I already have a membership</a>
+        <a href="<?php echo site_url('login');?>" class="text-center">Log In</a>
     </div>
     <!-- /.form-box -->
 </div>

@@ -1,9 +1,4 @@
-<div class="login-box">
-	<div class="login-logo">
-		<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/logo.png">
-		<p><b>Sign In</b></p>
-	</div>
-	
+<div class="login-box">	
 	<?php
 		$flash_data = $this->session->flashdata('flash_data');
 		if ( !empty( $flash_data ) ) {
@@ -17,8 +12,9 @@
 
 	<!-- /.login-logo -->
 	<div class="login-box-body">
-		<p class="login-box-msg">Sign in to start your session</p>
-		
+		<div class="login-logo">
+			<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/icon.jpg">
+		</div>
 		<form action="<?php echo site_url('login');?>" method="post">
 			<div class="form-group has-feedback">
 				<input type="email" class="form-control" name="email" placeholder="Email">
@@ -30,11 +26,6 @@
 			</div>
 			<div class="row">
 				<div class="col-xs-8">
-					<div class="checkbox icheck">
-						<label>
-						  <input type="checkbox"> Remember Me
-						</label>
-					</div>
 				</div>
 				<!-- /.col -->
 				<div class="col-xs-4">
@@ -53,8 +44,8 @@
 		<!--</div>-->
 		<!-- /.social-auth-links -->
 		
-		<a href="<?php echo site_url('forgot');?>">I forgot my password</a><br>
-		<a href="<?php echo site_url('signup');?>" class="text-center">Register a new membership</a>
+		<a href="<?php echo site_url('forgot');?>">Forgot password</a><br>
+		<a href="<?php echo site_url('signup');?>">Sign Up</a>
 	
 	</div>
 	<!-- /.login-box-body -->

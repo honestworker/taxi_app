@@ -65,15 +65,28 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method == 'GET' || $method == 'POST') {
     $route['login'] = 'auth';
     $route['signup'] = 'auth/signup';
+    $route['forgot'] = 'auth/forgotPassword';
+    $route['change_password'] = 'auth/changeAdminPassword';
 }
 if ($method == 'GET') {
     $route['logout'] = 'auth/logout';
-    $route['activate/(:any)'] = 'auth/activate/$1';
+    $route['active/(:any)'] = 'auth/active/$1';
+    $route['change/(:any)'] = 'auth/changePassword/$1';
 }
 
 // Admin
 if ($method == 'GET') {
-    $route['admin/dashboard'] = 'admin';
+    $route['dashboard'] = 'admin';
+    // Admin Account Management
+    $route['admins'] = 'admin/getAllAdmins';
+    // Driver Account Management
+    $route['drivers'] = 'admin/getAllDrivers';
+    // User Account Management
+    $route['users'] = 'admin/getAllUsers';
+    
+    $route['users/active/(:any)'] = 'admin/activeUser/$1';
+    $route['users/disable/(:any)'] = 'admin/disableUser/$1';
+    $route['users/delete/(:any)'] = 'admin/deleteUser/$1';
 }
 
 /* 

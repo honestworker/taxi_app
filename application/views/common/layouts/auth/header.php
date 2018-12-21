@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo base_url();?>assets/custom/images/favicon-96x96.png">
 	<meta property="og:image" content="<?php echo base_url();?>assets/custom/images/logo.png" />
 	<meta property="og:title" content="<?php echo APP_NAME;?>" />
 	<meta property="og:description" content="" />

@@ -1,3 +1,4 @@
+    </div>
     <footer class="main-footer">
         <div class="pull-right hidden-xs">
             <b>Version</b> 1.0.0
@@ -17,6 +18,9 @@
 </script>
 <!-- Bootstrap 3.3.7 -->
 <script src="<?php echo base_url();?>assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- DataTables -->
+<script src="<?php echo base_url();?>assets/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?php echo base_url();?>assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- Morris.js charts -->
 <script src="<?php echo base_url();?>assets/bower_components/raphael/raphael.min.js"></script>
 <script src="<?php echo base_url();?>assets/bower_components/morris.js/morris.min.js"></script>
@@ -44,8 +48,8 @@
 <script src="<?php echo base_url();?>assets/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="<?php echo base_url();?>assets/dist/js/pages/dashboard.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<?php echo base_url();?>assets/dist/js/demo.js"></script>
+<!-- Custom -->
+<script src="<?php echo base_url();?>assets/custom/js/custom.js"></script>
 
 <script>
 $(function() {

@@ -28,15 +28,6 @@ class Auth_Model extends CI_Model {
         
         return $ret;
     }
-
-    private function sendActivateCode( $email, $name, $code ) {
-        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
-        $this->email->to( $email );
-        $this->email->subject( 'Please activate your account.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please activate your account.<br/>Linke here: " . base_url() . 'activate/'. $code . "<br/><br/>Thank you.");
-        $this->email->set_mailtype('html');
-        $this->email->send();
-    }
 	
     private function sendEmailVerifyCode( $email, $name, $code ) {
         $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
@@ -55,7 +46,7 @@ class Auth_Model extends CI_Model {
 		if ( $user_row = $this->db->get_where('users', array('email' => $data['email'], 'role' => $data['role']))->result() ) {
             $user = $user_row[0];
             if ($user->status == 'activated') {
-                $response['error_type'] = -1; // Already registed
+                $response['error_type'] = -1; // Already registered
                 return $response;
             }
 
@@ -94,7 +85,7 @@ class Auth_Model extends CI_Model {
                 'role'			    => $data['role'],
                 'salt'			    => $salt,
                 'password'		    => md5($data['password'] . $salt),
-                'status'		    => 'registed',
+                'status'		    => 'registered',
                 'created_at'	    => date('Y-m-d H:i:s'),
                 'updated_at'	    => date('Y-m-d H:i:s'),
             );
@@ -117,10 +108,6 @@ class Auth_Model extends CI_Model {
                             $code = $this->generate_token(5, 'light');
                             $this->db->update('users', array('email_code' => $code), array('id' => $user->id) );
                             $this->sendEmailVerifyCode($user->email, $data['first_name'], $code);
-                        } else if ($data['role'] == 1) {
-                            $code = $this->generate_token(50, 'common');
-                            $this->db->update('users', array('activation_code' => $code), array('id' => $user->id) );
-                            $this->sendActivateCode($user->email, $data['first_name'], $code);
                         }
                         $response['error_type'] = 0;
                         $response['user'] = array(
