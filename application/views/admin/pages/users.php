@@ -7,16 +7,13 @@
             <h3 class="box-title">Users</h3>
         </div>
         <!-- /.box-header -->
-        <div class="box-body user-table">
+        <div class="box-body user-table" style="overflow: auto;">
             <table id="user_table" class="table table-bordered table-striped">
             <thead>
             <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
-                <th>Phone Number</th>
-                <th>Email Verified</th>
-                <th>Phone Verified</th>
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -30,33 +27,6 @@
                     <td><?php echo $user->first_name; ?></td>
                     <td><?php echo $user->last_name; ?></td>
                     <td><?php echo $user->email; ?></td>
-                    <td><?php echo $user->phone_number; ?></td>
-                    <td class="text-center">
-                        <?php
-                        if ($user->email_confirmed) {
-                        ?>
-                        <span class="label label-primary">O</span>
-                        <?php
-                        } else {
-                        ?>
-                        <span class="label label-warning">X</span>
-                        <?php
-                        }
-                        ?>
-                    </td>
-                    <td class="text-center">
-                        <?php
-                        if ($user->phone_confirmed) {
-                        ?>
-                        <span class="label label-primary">O</span>
-                        <?php
-                        } else {
-                        ?>
-                        <span class="label label-warning">X</span>
-                        <?php
-                        }
-                        ?>
-                    </td>
                     <td><?php echo $user->created_at; ?></td>
                     <td><?php echo $user->status; ?></td>
                     <td>
@@ -83,9 +53,6 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
-                <th>Phone Number</th>
-                <th>Email Verified</th>
-                <th>Phone Verified</th>
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Action</th>

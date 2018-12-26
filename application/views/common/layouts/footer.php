@@ -20,7 +20,7 @@
 								type: 'danger',
 								allow_dismiss: true
 							});
-						}, 1000);
+						}, 300);
 					<?php }
 				}
 				if ( $flash_data['alerts']['info'] ) {
@@ -30,7 +30,7 @@
 								type: 'info',
 								allow_dismiss: true
 							});
-						}, 1000);
+						}, 300);
 					<?php }
 				}
 				if ( $flash_data['alerts']['success'] ) {
@@ -40,7 +40,7 @@
 								type: 'success',
 								allow_dismiss: true
 							});
-						}, 1000);
+						}, 300);
 					<?php }
 				}
 			}

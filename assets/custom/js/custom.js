@@ -40,13 +40,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'admins';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-active-modal').modal('hide');
             },
@@ -71,13 +64,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'admins';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-active-modal').modal('hide');
             },
@@ -102,13 +88,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'admins';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-active-modal').modal('hide');
             },
@@ -165,13 +144,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'drivers';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-active-modal').modal('hide');
             },
@@ -196,13 +168,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'drivers';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-disable-modal').modal('hide');
             },
@@ -227,13 +192,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'drivers';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#driver-delete-modal').modal('hide');
             },
@@ -290,13 +248,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'users';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#user-active-modal').modal('hide');
             },
@@ -321,13 +272,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'users';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#user-disable-modal').modal('hide');
             },
@@ -352,13 +296,6 @@ $(function () {
                 console.log(data);
                 if ( data.status == 'success' ) {
                     window.location = $('#base_url').val() + 'users';
-                } else {
-                    setTimeout(function() {
-                        $.bootstrapGrowl(data.message, {
-                            type: 'danger',
-                            allow_dismiss: true
-                        });
-                    }, 1000);
                 }
                 $('#user-delete-modal').modal('hide');
             },
@@ -373,4 +310,141 @@ $(function () {
             }
         });
     });
+    
+    /*
+     * Advertisement Page
+     */
+    $ad_id = 0;
+
+    // Datatable
+    $('#ad_table').DataTable({
+      'paging'      : true,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true
+    });
+
+    // Modal
+    $('.ad-table .btn-success').click(function() {
+        $ad_id = $(this).parent().parent().data('id');
+        $('#ad-active-modal').modal('show');
+    });
+
+    $('.ad-table .btn-warning').click(function() {
+        $ad_id = $(this).parent().parent().data('id');
+        $('#ad-disable-modal').modal('show');
+    });
+
+    $('.ad-table .btn-danger').click(function() {
+        $ad_id = $(this).parent().parent().data('id');
+        $('#ad-delete-modal').modal('show');
+    });
+    
+    // Button
+    $('.active-ad').click(function() {
+        $.ajax({
+            type: 'GET',
+            url: "../ads/active/" + $ad_id,
+            success: function(resposne) {
+                var data = JSON.parse(resposne);
+                console.log(data);
+                if ( data.status == 'success' ) {
+                    window.location = $('#base_url').val() + 'ads';
+                }
+                $('#ad-active-modal').modal('hide');
+            },
+            error: function(data) {
+                setTimeout(function() {
+                    $.bootstrapGrowl('Server Error', {
+                        type: 'danger',
+                        allow_dismiss: true
+                    });
+                }, 1000);
+                $('#ad-active-modal').modal('hide');
+            }
+        });
+    });
+
+    $('.disable-ad').click(function() {
+        $.ajax({
+            type: 'GET',
+            url: "../ads/disable/" + $ad_id,
+            success: function(resposne) {
+                var data = JSON.parse(resposne);
+                console.log(data);
+                if ( data.status == 'success' ) {
+                    window.location = $('#base_url').val() + 'ads';
+                }
+                $('#ad-disable-modal').modal('hide');
+            },
+            error: function(data) {
+                setTimeout(function() {
+                    $.bootstrapGrowl('Server Error', {
+                        type: 'danger',
+                        allow_dismiss: true
+                    });
+                }, 1000);
+                $('#ad-disable-modal').modal('hide');
+            }
+        });
+    });
+
+    $('.delete-ad').click(function() {
+        $.ajax({
+            type: 'GET',
+            url: "../ads/delete/" + $ad_id,
+            success: function(resposne) {
+                var data = JSON.parse(resposne);
+                console.log(data);
+                if ( data.status == 'success' ) {
+                    window.location = $('#base_url').val() + 'ads';
+                }
+                $('#ad-delete-modal').modal('hide');
+            },
+            error: function(data) {
+                setTimeout(function() {
+                    $.bootstrapGrowl('Server Error', {
+                        type: 'danger',
+                        allow_dismiss: true
+                    });
+                }, 1000);
+                $('#ad-delete-modal').modal('hide');
+            }
+        });
+    });
+
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+        
+        // Loop through the FileList and render image files as thumbnails.
+        for (var i = 0, f; f = files[i]; i++) {
+            // Only process image files.
+            if (!f.type.match('image.*')) {
+                continue;
+            }
+            
+            var reader = new FileReader();
+            
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    // Render thumbnail.
+                    var span = document.createElement('span');
+                    span.innerHTML = ['<img class="thumb" src="', e.target.result, '" title="', escape(theFile.name), '"/>'].join('');
+                    var listNode = document.getElementById('list');
+                    while (listNode.firstChild) {
+                        listNode.removeChild(listNode.firstChild);
+                    }
+                    document.getElementById('list').append(span);
+                };
+            })(f);
+            
+            // Read in the image file as a data URL.
+            reader.readAsDataURL(f);
+        }
+    }
+
+    document.getElementById('images').addEventListener('change', handleFileSelect, false);
 })

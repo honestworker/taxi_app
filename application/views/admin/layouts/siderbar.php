@@ -41,6 +41,7 @@ if ($admin_url_array) {
                     <li class="<?php if ($main_url == 'users') { echo 'active'; } ?>"><a href="<?php echo base_url(); ?>users"><i class="fa fa-user-o"></i> Users</a></li>
                 </ul>
             </li>
+            <li class="<?php if ($main_url == '' || $main_url == 'ads') { echo 'active menu-open'; } ?>"><a href="<?php echo base_url();?>ads"><i class="fa fa-paw"></i> <span>Advertisements</span></a></li>
         </ul>
     </section>
     <!-- /.sidebar -->
@@ -57,7 +58,7 @@ if ($admin_url_array) {
         <ol class="breadcrumb">
             <li><a href="<?php echo base_url();?>dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             <?php 
-                if ($main_url == 'admins' || $main_url == 'drivers' || $main_url == 'users') {
+                if ($main_url == 'admins' || $main_url == 'drivers' || $main_url == 'users' || $main_url == 'ads') {
             ?>
             <li class="active">
             <?php
@@ -67,6 +68,8 @@ if ($admin_url_array) {
                     ?><a href="<?php echo base_url();?>drivers">Drivers</a><?php
                 } else if ($main_url == 'users') {
                     ?><a href="<?php echo base_url();?>users">Users</a><?php
+                } else if ($main_url == 'ads') {
+                    ?><a href="<?php echo base_url();?>users">Advertisements</a><?php
                 }
             ?>
             </li>

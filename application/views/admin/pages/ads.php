@@ -4,19 +4,18 @@
     <div class="col-xs-12">
         <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Drivers</h3>
+            <h3 class="box-title">Advertisements</h3>
+            <br><br>
+            <button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> <a style="color: white;" href="<?php echo base_url(); ?>ads/create">Create Advertisement</a></button>
         </div>
         <!-- /.box-header -->
-        <div class="box-body driver-table" style="overflow: auto;">
-            <table id="driver_table" class="table table-bordered table-striped">
+        <div class="box-body ad-table" style="overflow: auto;">
+            <table id="ad_table" class="table table-bordered table-striped">
             <thead>
             <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Email Verified</th>
-                <th>Phone Verified</th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Link</th>
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -24,44 +23,18 @@
             </thead>
             <tbody>
             <?php
-            foreach($drivers as $driver) {
+            foreach($ads as $ad) {
                 ?>
-                <tr data-id="<?php echo $driver->id; ?>">
-                    <td><?php echo $driver->first_name; ?></td>
-                    <td><?php echo $driver->last_name; ?></td>
-                    <td><?php echo $driver->email; ?></td>
-                    <td><?php echo $driver->phone_number; ?></td>
-                    <td class="text-center">
-                        <?php
-                        if ($driver->email_confirmed) {
-                        ?>
-                        <span class="label label-primary">O</span>
-                        <?php
-                        } else {
-                        ?>
-                        <span class="label label-warning">X</span>
-                        <?php
-                        }
-                        ?>
-                    </td>
-                    <td class="text-center">
-                        <?php
-                        if ($driver->phone_confirmed) {
-                        ?>
-                        <span class="label label-primary">O</span>
-                        <?php
-                        } else {
-                        ?>
-                        <span class="label label-warning">X</span>
-                        <?php
-                        }
-                        ?>
-                    </td>
-                    <td><?php echo $driver->created_at; ?></td>
-                    <td><?php echo $driver->status; ?></td>
+                <tr data-id="<?php echo $ad->id; ?>">
+                    <td><?php echo $ad->name; ?></td>
+                    <td><img src="<?php echo (base_url() . 'public/images/ads/' . $ad->image); ?>" style="height: 100px;"></td>
+                    <td><?php echo $ad->link; ?></td>
+                    <td><?php echo $ad->created_at; ?></td>
+                    <td><?php echo $ad->status; ?></td>
                     <td>
+                        <button type="button" class="btn btn-info"><a style="color: white;" href="<?php echo base_url() . 'ads/edit/' . $ad->id;?>"><i class="fa fa-eye"></i></a></button>
                         <?php
-                        if ($driver->status == 'disabled') {
+                        if ($ad->status == 'disabled') {
                         ?>
                             <button type="button" class="btn btn-success"><i class="fa fa-check"></i></button>
                         <?php
@@ -80,12 +53,9 @@
             </tbody>
             <tfoot>
             <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Email Verified</th>
-                <th>Phone Verified</th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Link</th>
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -103,22 +73,22 @@
 </section>
 <!-- /.content -->
 
-<!-- Active Driver Modal -->
-<div class="modal modal-info fade" id="driver-active-modal">
+<!-- Active Advertisement Modal -->
+<div class="modal modal-info fade" id="ad-active-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header modal-danger">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title">Active Driver</h4>
+                <h4 class="modal-title">Active Advertisement</h4>
             </div>
             <div class="modal-body">
-                <p>Do you want to active this Driver?</p>
+                <p>Do you want to active this Advertisement?</p>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary active-driver">Active</button>
+                <button type="button" class="btn btn-primary active-ad">Active</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -126,22 +96,22 @@
     <!-- /.modal-dialog -->
 </div>
 
-<!-- Disable Driver Modal -->
-<div class="modal modal-info fade" id="driver-disable-modal">
+<!-- Disable Advertisement Modal -->
+<div class="modal modal-info fade" id="ad-disable-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header modal-danger">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title">Disable Driver</h4>
+                <h4 class="modal-title">Disable Advertisement</h4>
             </div>
             <div class="modal-body">
-                <p>Do you want to disable this Driver?</p>
+                <p>Do you want to disable this Advertisement?</p>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning disable-driver">Disable</button>
+                <button type="button" class="btn btn-warning disable-ad">Disable</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -149,22 +119,22 @@
     <!-- /.modal-dialog -->
 </div>
 
-<!-- Delete Driver Modal -->
-<div class="modal modal-info fade" id="driver-delete-modal">
+<!-- Delete Advertisement Modal -->
+<div class="modal modal-info fade" id="ad-delete-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header modal-danger">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title">Delete Driver</h4>
+                <h4 class="modal-title">Delete Advertisement</h4>
             </div>
             <div class="modal-body">
-                <p>Do you want to delte this Driver?</p>
+                <p>Do you want to delte this Advertisement?</p>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger delete-driver">Delete</button>
+                <button type="button" class="btn btn-danger delete-ad">Delete</button>
             </div>
         </div>
         <!-- /.modal-content -->

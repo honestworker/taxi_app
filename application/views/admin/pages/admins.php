@@ -7,7 +7,7 @@
             <h3 class="box-title">Administrators</h3>
         </div>
         <!-- /.box-header -->
-        <div class="box-body admin-table">
+        <div class="box-body admin-table" style="overflow: auto;">
             <table id="admin_table" class="table table-bordered table-striped">
             <thead>
             <tr>

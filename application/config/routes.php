@@ -77,16 +77,25 @@ if ($method == 'GET') {
 // Admin
 if ($method == 'GET') {
     $route['dashboard'] = 'admin';
-    // Admin Account Management
+
+    // Account Management
     $route['admins'] = 'admin/getAllAdmins';
-    // Driver Account Management
     $route['drivers'] = 'admin/getAllDrivers';
-    // User Account Management
     $route['users'] = 'admin/getAllUsers';
-    
+
     $route['users/active/(:any)'] = 'admin/activeUser/$1';
     $route['users/disable/(:any)'] = 'admin/disableUser/$1';
     $route['users/delete/(:any)'] = 'admin/deleteUser/$1';
+    
+    // Advertisement Management
+    $route['ads'] = 'admin/getAllAds';
+    $route['ads/create'] = 'admin/createAd';
+    $route['ads/edit/(:any)'] = 'admin/editAd/$1';
+    $route['ads/active/(:any)'] = 'admin/activeAd/$1';
+    $route['ads/disable/(:any)'] = 'admin/disableAd/$1';
+    $route['ads/delete/(:any)'] = 'admin/deleteAd/$1';
+} else if ($method == 'POST') {
+    $route['ads/store'] = 'admin/storeAd';
 }
 
 /* 
@@ -112,4 +121,8 @@ if ($method == 'POST') {
     
     $route['api/forgot_password'] = 'api/forgotPassword';
     $route['api/change_password'] = 'api/changePassword';
+    
+    $route['api/get_drivers'] = 'api/getDrivers';
+
+    $route['api/get_ad'] = 'api/getAd';
 }

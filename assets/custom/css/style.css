@@ -1,11 +1,6 @@
-.landing-section {
-    position: relative;
-    margin: 0;
-    background: url(../images/banner-01.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: left top;
-}
-.login-logo {
-    color: white;
+.thumb {
+    max-height: 350px;
+    max-width: 350px;
+    border: 1px solid #000;
+    margin: 10px 5px 0 0;
 }
