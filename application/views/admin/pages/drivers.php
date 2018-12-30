@@ -11,6 +11,7 @@
             <table id="driver_table" class="table table-bordered table-striped">
             <thead>
             <tr>
+                <th>Avatar</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
@@ -27,6 +28,13 @@
             foreach($drivers as $driver) {
                 ?>
                 <tr data-id="<?php echo $driver->id; ?>">
+                    <td><?php
+                        if ($driver->avatar) {
+                            echo '<img src="/public/images/users/' .  $driver->avatar . '" style="max-height: 100px;">';
+                        } else {
+                            echo '<img src="/public/images/users/no_avatar.jpg" style="max-height: 100px;">';
+                        }
+                    ?></td>
                     <td><?php echo $driver->first_name; ?></td>
                     <td><?php echo $driver->last_name; ?></td>
                     <td><?php echo $driver->email; ?></td>
@@ -80,6 +88,7 @@
             </tbody>
             <tfoot>
             <tr>
+                <th>Avatar</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>

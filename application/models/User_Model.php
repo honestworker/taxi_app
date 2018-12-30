@@ -1,6 +1,9 @@
 <?php
 
 class User_Model extends CI_Model {
+
+    protected $image_extensions = array('jpeg', 'png', 'jpg', 'gif', 'bmp');
+
     private $images_path = 'public/images/users/';
 
     function __construct() {
@@ -170,7 +173,6 @@ class User_Model extends CI_Model {
                 if ( $profile->phone_number != $phone_number ) {
                     return -2;
                 }
-                $this->db->update('users', array('status' => 'activated'), array('id' => $user->id) );
                 $this->db->update('profile', array('phone_confirmed' => 1), array('id' => $profile->id) );
                 return 0;
             } else {
@@ -179,6 +181,30 @@ class User_Model extends CI_Model {
         }
 
         return -4;
+    }
+
+    public function uploadAvatar( $role, $email, $avatar ) {
+        $imageType = pathinfo($avatar['name'], PATHINFO_EXTENSION);
+        if ( !in_array(strtolower($imageType), $this->image_extensions) ) {
+            return -1;
+        }
+
+		if ( $user_row = $this->db->get_where('users', array('email' => $email, 'role' => $role) )->result() ) {
+            $user = $user_row[0];
+            if ( $user->status == 'activated' ) {
+                return -2;
+            }
+   
+            $mt = explode(' ', microtime());
+            $name = ((int)$mt[1]) * 1000000 + ((int)round($mt[0] * 1000000));
+            $file_name = $name . '.' . str_replace('image/', '', $imageType);
+            $tmp_name = $avatar['tmp_name'];
+            move_uploaded_file( $tmp_name, $this->images_path . $file_name );
+            $this->db->update('users', array('avatar' => $file_name, 'status' => 'activated', 'updated_at' => date('Y-m-d H:i:s')), array('id' => $user->id) );
+            return 0;
+        }
+
+        return -3;
     }
 
     public function changeEmailCode( $token, $email ) {
@@ -359,7 +385,7 @@ class User_Model extends CI_Model {
     *  Get all users by according the user role
     */
     public function getUsers($role) {
-        $sql_query = "SELECT ut.id, ut.email, ut.created_at, ut.status, ut.latitude, ut.longitude, pt.first_name, pt.last_name, pt.phone_number, pt.email_confirmed, pt.phone_confirmed,";
+        $sql_query = "SELECT ut.id, ut.email, ut.avatar, ut.created_at, ut.status, ut.latitude, ut.longitude, pt.first_name, pt.last_name, pt.phone_number, pt.email_confirmed, pt.phone_confirmed,";
         $sql_query .= " (SELECT avg(rate) FROM ratings WHERE ut.id = ratings.driver_id) AS rate ";
         $sql_query .= " FROM users as ut INNER JOIN profile as pt ON pt.user_id=ut.id";
         $type = "";
@@ -388,7 +414,7 @@ class User_Model extends CI_Model {
             'error_type' => -1
         );
 		if ( $user_row = $this->db->get_where('users', array('token' => $token) )->result() ) {
-            $sql_query = "SELECT ut.id, ut.email, ut.latitude, ut.longitude, pt.first_name, pt.last_name, pt.comment, pt.phone_number,";
+            $sql_query = "SELECT ut.id, ut.email, ut.avatar, ut.latitude, ut.longitude, pt.first_name, pt.last_name, pt.comment, pt.phone_number,";
             $sql_query .= " (SELECT avg(rate) FROM ratings WHERE ut.id = ratings.driver_id) AS rate ";
             $sql_query .= " FROM users as ut INNER JOIN profile as pt ON pt.user_id=ut.id";
             $sql_query .= " WHERE ut.status = 'activated' AND ut.token != ''";
@@ -407,7 +433,7 @@ class User_Model extends CI_Model {
             $users = $this->db->query($sql_query)->result();
             if ($users) {
                 foreach($users as $user) {
-                    $this->db->select('name'); // Select field
+                    $this->db->select('name, width, height'); // Select field
                     $this->db->from('images');
                     if ($type) {
                         $this->db->where('type', $type);
@@ -487,6 +513,9 @@ class User_Model extends CI_Model {
             if ( $profile_row = $this->db->get_where('profile', array('user_id' => $user->id) )->result() ) {
                 $profile = $profile_row[0];
                 $this->db->delete('profile', array('id' => $profile->id));
+            }
+            if ( $user->avatar ) {
+                unlink($this->images_path . $user->avatar);
             }
             $image_type = '';
             if ($user->role == 1) {

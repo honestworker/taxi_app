@@ -11,6 +11,7 @@
             <table id="user_table" class="table table-bordered table-striped">
             <thead>
             <tr>
+                <th>Avatar</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
@@ -24,6 +25,13 @@
             foreach($users as $user) {
                 ?>
                 <tr data-id="<?php echo $user->id; ?>">
+                    <td><?php
+                        if ($user->avatar) {
+                            echo '<img src="/public/images/users/' .  $user->avatar . '" style="max-height: 100px;">';
+                        } else {
+                            echo '<img src="/public/images/users/no_avatar.jpg" style="max-height: 100px;">';
+                        }
+                    ?></td>
                     <td><?php echo $user->first_name; ?></td>
                     <td><?php echo $user->last_name; ?></td>
                     <td><?php echo $user->email; ?></td>
@@ -50,6 +58,7 @@
             </tbody>
             <tfoot>
             <tr>
+                <th>Avatar</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>

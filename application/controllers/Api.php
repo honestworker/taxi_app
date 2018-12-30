@@ -105,20 +105,22 @@ class Api extends CI_Controller {
             'last_name'		    => strip_tags(trim($this->input->post('last_name'))),
             'email'			    => strtolower(strip_tags(trim($this->input->post('email')))),
             'password'		    => strip_tags($this->input->post('password')),
-            'role'			    => $role,            
+            'role'			    => $role,
             'images'			=> $images,
         );
         
         $result = $this->Auth_Model->createUser($user_data);
         if ( $result['error_type'] == 0 ) {
             $this->response['status'] = 'success';
-            $this->response['data'] = $result['user'];
             $this->response['error_type'] = '';
+            $this->response['data'] =  $result['user'];
         } else if ( $result['error_type'] == -1 ) {
             $this->response['error_type'] = 'registered';
         } else if ( $result['error_type'] == -2 ) {
             $this->response['error_type'] = 'database';
         } else if ( $result['error_type'] == -3 ) {
+            $this->response['error_type'] = 'image_error';
+        } else if ( $result['error_type'] == -4 ) {
             $this->response['error_type'] = 'image_error';
         }
 
@@ -304,6 +306,44 @@ class Api extends CI_Controller {
         exit(-1);
     }
     
+    public function uploadAvatar() {
+        $this->form_validation->set_rules('type', 'Type', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        if ($this->form_validation->run() == false) {
+            echo json_encode($this->response);
+            exit(-1);
+        }
+
+        if ( !isset( $_FILES['avatar'] ) ) {
+            echo json_encode($this->response);
+            exit(-1);
+        }
+        if ($this->input->post('type') != 'driver' && $this->input->post('type') != 'user') {
+            $this->response['error_type'] = 'no_type';
+            echo json_encode($this->response);
+            exit(-1);
+        }
+        
+        $role = 2;
+        if ($this->input->post('type') == 'user') {
+            $role = 3;
+        }
+        $result = $this->User_Model->uploadAvatar($role, strtolower(strip_tags(trim($this->input->post('email')))), $_FILES['avatar']);
+        if ( $result == 0 ) {
+            $this->response['status'] = 'success';
+            $this->response['error_type'] = '';
+        } else if ( $result == -1 ) {
+            $this->response['error_type'] = 'image_error';
+        } else if ( $result == -2 ) {
+            $this->response['error_type'] = 'registered';
+        } else if ( $result == -3 ) {
+            $this->response['error_type'] = 'no_user';
+        }
+
+        echo json_encode($this->response);
+        exit(-1);
+    }
+
     public function changeEmailCode() {
         $this->form_validation->set_rules('token', 'Token', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');

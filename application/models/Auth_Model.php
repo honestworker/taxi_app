@@ -3,7 +3,7 @@
 class Auth_Model extends CI_Model {
     
     protected $image_extensions = array('image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/bmp');
-
+    
     private $images_path = 'public/images/users/';
 
     function __construct() {
@@ -66,15 +66,13 @@ class Auth_Model extends CI_Model {
                 foreach ( $data['images']['error'] as $key => $error ) {
                     if ($error !== UPLOAD_ERR_OK) {
                         $response['error_type'] = -3;
-                        echo json_encode($this->response);
-                        exit(-1);
+                        return $response;
                     }
                 }
                 foreach ( $data['images']['type'] as $key => $type ) {
-                    if ( !in_array($type, $this->image_extensions) ) {
+                    if ( !in_array(strtolower($type), $this->image_extensions) ) {
                         $response['error_type'] = -4;
-                        echo json_encode($this->response);
-                        exit(-1);
+                        return $response;
                     }
                 }
             }
@@ -106,9 +104,14 @@ class Auth_Model extends CI_Model {
             if ($data['images']) {
                 $this->uploadImage($user->id, $data['role'], $data['images']);
             }
+            
+            if ( $user->avatar ) {
+                unlink($this->images_path . $user->avatar);
+            }
             $salt = $this->generate_code(10, 'middle');
             $this->db->update('users', array('salt' => $salt, 'password' => md5($data['password'] . $salt), 'updated_at' => date('Y-m-d H:i:s')), array('id' => $user->id) );
             
+            $code = '';
             if ($data['role'] == 2 || $data['role'] == 3) {
                 $code = $this->generate_code(5, 'light');
                 $this->db->update('users', array('email_code' => $code), array('id' => $user->id) );
@@ -119,9 +122,11 @@ class Auth_Model extends CI_Model {
             $response['user'] = array(
                 'id'			    => $user->id,
                 'email'			    => $user->email,
+                'avatar'			=> '',
                 'first_name'		=> $data['first_name'],
                 'last_name'		    => $data['last_name'],
                 'created_at'	    => $user->created_at,
+                //'code'              => $code,
             );
             return $response;
         } else {
@@ -130,6 +135,7 @@ class Auth_Model extends CI_Model {
                 'email'			    => $data['email'],
                 'role'			    => $data['role'],
                 'salt'			    => $salt,
+                'avatar'			=> '',
                 'password'		    => md5($data['password'] . $salt),
                 'status'		    => 'registered',
                 'created_at'	    => date('Y-m-d H:i:s'),
@@ -158,6 +164,7 @@ class Auth_Model extends CI_Model {
                         if ($data['images']) {
                             $this->uploadImage($user->id, $data['role'], $data['images']);
                         }
+                        $code = '';
                         if ($data['role'] == 2 || $data['role'] == 3) {
                             $code = $this->generate_code(5, 'light');
                             $this->db->update('users', array('email_code' => $code), array('id' => $user->id) );
@@ -166,10 +173,12 @@ class Auth_Model extends CI_Model {
                         $response['error_type'] = 0;
                         $response['user'] = array(
                             'id'			    => $user->id,
+                            'avatar'			=> $user->avatar,
                             'email'			    => $user->email,
                             'first_name'		=> $data['first_name'],
                             'last_name'		    => $data['last_name'],
                             'created_at'	    => $user->created_at,
+                            //'code'              => $code,
                         );
                         return $response;
                     }
@@ -204,11 +213,14 @@ class Auth_Model extends CI_Model {
                     $file_name = $name . '.' . str_replace('image/', '', $type);
                     $tmp_name = $images['tmp_name'][$key];
                     move_uploaded_file( $tmp_name, $this->images_path . $file_name );
+                    list($width, $height) = getimagesize( $this->images_path . $file_name );
                     $this->db->insert('images',
                         array(
                             'type'          => $image_type,
                             'parent_id'     => $user_id,
                             'name'          => $file_name,
+                            'width'         => $width,
+                            'height'        => $height,
                             'created_at'    => date('Y-m-d H:i:s'),
                             'updated_at'    => date('Y-m-d H:i:s'),
                         ));

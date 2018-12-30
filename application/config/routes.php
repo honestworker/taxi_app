@@ -114,6 +114,7 @@ if ($method == 'POST') {
     $route['api/update_position'] = 'api/updatePosition';
     $route['api/sms_verify_code'] = 'api/smsVerifyCode';
     $route['api/sms_verify'] = 'api/smsVerify';
+    $route['api/upload_avatar'] = 'api/uploadAvatar';
     $route['api/change_email_code'] = 'api/changeEmailCode';
     $route['api/change_email'] = 'api/changeEmail';
     $route['api/change_sms_code'] = 'api/changeSmsCode';

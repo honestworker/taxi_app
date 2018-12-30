@@ -42,7 +42,7 @@ class Ads_Model extends CI_Model {
                     }
                 }
                 foreach ( $data['images']['type'] as $key => $type ) {
-                    if ( !in_array($type, $this->image_extensions) ) {
+                    if ( !in_array(strtolower($type), $this->image_extensions) ) {
                         return -3;
                     }
                 }
