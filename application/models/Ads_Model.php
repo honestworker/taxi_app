@@ -4,7 +4,7 @@ class Ads_Model extends CI_Model {
     
     protected $image_extensions = array('image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/bmp');
 
-    private $images_path = 'public/images/ads/';
+    protected $images_path = 'public/images/ads/';
 
     function __construct() {
         parent::__construct();

@@ -4,7 +4,7 @@ class User_Model extends CI_Model {
 
     protected $image_extensions = array('jpeg', 'png', 'jpg', 'gif', 'bmp');
 
-    private $images_path = 'public/images/users/';
+    protected $images_path = 'public/images/users/';
 
     function __construct() {
         parent::__construct();
