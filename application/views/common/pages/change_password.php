@@ -12,7 +12,7 @@
 
     <div class="register-box-body">
         <div class="register-logo">
-            <img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/icon.jpg">
+			<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/logo.png">
         </div>
         <form action="<?php echo site_url('change_password');?>" method="post">
             <input type="hidden" name="active_code"  value="<?php echo $active_code; ?>">

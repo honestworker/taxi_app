@@ -13,13 +13,14 @@ if (isset($ad)) {
         <div class="box">
         <div class="box-header">
             <h3 class="box-title">
+            <h3 class="box-title" style="margin-top: 10px;">&nbsp;&nbsp;&nbsp;<b>
             <?php if ($method == 'edit') {
                 ?>Edit <?php
             } else {
                 ?>Create <?php
             }
             ?>
-            Advertisement</h3>
+            Advertisement</b></h3>
             <br><br>
         </div>
         <!-- /.box-header -->

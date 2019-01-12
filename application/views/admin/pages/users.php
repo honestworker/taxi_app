@@ -4,10 +4,11 @@
     <div class="col-xs-12">
         <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Users</h3>
+            <h3 class="box-title" style="margin-top: 10px;">&nbsp;&nbsp;&nbsp;<b>Users</b></h3>
+            <br><br>
         </div>
         <!-- /.box-header -->
-        <div class="box-body user-table" style="overflow: auto;">
+        <div class="box-body user-table">
             <table id="user_table" class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -36,20 +37,20 @@
                     <td><?php echo $user->last_name; ?></td>
                     <td><?php echo $user->email; ?></td>
                     <td><?php echo $user->created_at; ?></td>
-                    <td><?php echo $user->status; ?></td>
                     <td>
-                        <?php
-                        if ($user->status == 'disabled') {
-                        ?>
-                            <button type="button" class="btn btn-success"><i class="fa fa-check"></i></button>
-                        <?php
-                        } else {
-                        ?>
-                            <button type="button" class="btn btn-warning"><i class="fa fa-check"></i></button>
-                        <?php
-                        }
-                        ?>
-                        <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                    <?php if ( $user->status == 'activated' ) { ?>
+                        <span class="label label-success" style="font-size: 85%;"><?php echo $user->status; ?></span>
+                    <?php } else { ?>
+                        <span class="label label-warning" style="font-size: 85%;"><?php echo $user->status; ?></span>
+                    <?php } ?>
+                    </td>
+                    <td>
+                    <?php if ($user->status == 'activated') { ?>
+                        <button type="button" class="btn btn-warning" onclick="viewActionUserModal('user', 'disable', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } else { ?>
+                        <button type="button" class="btn btn-success" onclick="viewActionUserModal('user', 'active', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } ?>
+                        <button type="button" class="btn btn-danger" onclick="viewActionUserModal('user', 'delete', $(this).parent().parent().data('id'))"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             <?php
@@ -94,7 +95,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary active-user">Active</button>
+                <button type="button" class="btn btn-primary active-user" onclick="actionUser('user', 'active')">Active</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -117,7 +118,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning disable-user">Disable</button>
+                <button type="button" class="btn btn-warning disable-user" onclick="actionUser('user', 'disable')">Disable</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -140,7 +141,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger delete-user">Delete</button>
+                <button type="button" class="btn btn-danger delete-user" onclick="actionUser('user', 'delete')">Delete</button>
             </div>
         </div>
         <!-- /.modal-content -->

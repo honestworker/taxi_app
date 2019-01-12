@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
     <link rel="icon" type="image/png" sizes="96x96" href="<?php echo base_url();?>assets/custom/images/favicon-96x96.png">
-	<meta property="og:image" content="<?php echo base_url();?>assets/custom/images/logo.png" />
+	<meta property="og:image" content="<?php echo base_url();?>assets/custom/images/favicon.png" />
 	<meta property="og:title" content="<?php echo APP_NAME;?>" />
 	<meta property="og:description" content="" />
 	<meta property="og:type" content="article" />
@@ -26,6 +26,8 @@
 	<!-- iCheck -->
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/iCheck/square/blue.css">
 
+	<link rel="shortcut icon" type="image/x-icon" href="<?php echo base_url();?>assets/custom/images/favicon.png" />
+	
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -35,7 +37,6 @@
 
 	<!-- Google Font -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-	<link rel="shortcut icon" type="image/x-icon" href="<?php echo base_url();?>assets/custom/images/logo.png" />
 </head>
 
 <body class="hold-transition login-page landing-section">

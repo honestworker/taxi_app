@@ -4,10 +4,11 @@
     <div class="col-xs-12">
         <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Administrators</h3>
+            <h3 class="box-title" style="margin-top: 10px;">&nbsp;&nbsp;&nbsp;<b>Administrators</b></h3>
+            <br><br>
         </div>
         <!-- /.box-header -->
-        <div class="box-body admin-table" style="overflow: auto;">
+        <div class="box-body admin-table">
             <table id="admin_table" class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -28,20 +29,20 @@
                     <td><?php echo $admin->last_name; ?></td>
                     <td><?php echo $admin->email; ?></td>
                     <td><?php echo $admin->created_at; ?></td>
-                    <td><?php echo $admin->status; ?></td>
                     <td>
-                        <?php
-                        if ($admin->status == 'activated') {
-                        ?>
-                        <button type="button" class="btn btn-warning"><i class="fa fa-check"></i></button>
-                        <?php
-                        } else {
-                        ?>
-                            <button type="button" class="btn btn-success"><i class="fa fa-check"></i></button>
-                        <?php
-                        }
-                        ?>
-                        <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                    <?php if ( $admin->status == 'activated' ) { ?>
+                        <span class="label label-success" style="font-size: 85%;"><?php echo $admin->status; ?></span>
+                    <?php } else { ?>
+                        <span class="label label-warning" style="font-size: 85%;"><?php echo $admin->status; ?></span>
+                    <?php } ?>
+                    </td>
+                    <td>
+                    <?php if ($admin->status == 'activated') { ?>
+                        <button type="button" class="btn btn-warning" onclick="viewActionUserModal('admin', 'disable', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } else { ?>
+                        <button type="button" class="btn btn-success" onclick="viewActionUserModal('admin', 'active', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } ?>
+                        <button type="button" class="btn btn-danger" onclick="viewActionUserModal('admin', 'delete', $(this).parent().parent().data('id'))"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             <?php
@@ -85,7 +86,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary active-admin">Active</button>
+                <button type="button" class="btn btn-primary active-admin" onclick="actionUser('admin', 'active')">Active</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -108,7 +109,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning disable-admin">Disable</button>
+                <button type="button" class="btn btn-warning disable-admin" onclick="actionUser('admin', 'disable')">Disable</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -131,7 +132,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger delete-admin">Delete</button>
+                <button type="button" class="btn btn-danger delete-admin" onclick="actionUser('admin', 'delete')">Delete</button>
             </div>
         </div>
         <!-- /.modal-content -->

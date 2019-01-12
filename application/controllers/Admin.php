@@ -30,15 +30,31 @@ class Admin extends CI_Controller {
                 'error' => null
             )
         );
+
+        $user_data = $this->session->get_userdata();
+        if ( !$user_data ) {
+            redirect('../login');
+        } else {
+            if ( !isset($user_data['id']) ) {
+                redirect('../login');
+            }
+        }
+        if ( !$this->User_Model->isActivated($user_data['id']) ) {
+            $this->session->unset_userdata('id');
+            $this->session->unset_userdata('name');
+            $this->session->unset_userdata('avatar');
+            
+            redirect('../login');
+        }
     }
     
 	public function index() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -53,10 +69,10 @@ class Admin extends CI_Controller {
 	public function getAllAdmins() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -71,10 +87,10 @@ class Admin extends CI_Controller {
 	public function getAllDrivers() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
 
@@ -89,10 +105,10 @@ class Admin extends CI_Controller {
 	public function getAllUsers() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -107,10 +123,10 @@ class Admin extends CI_Controller {
 	public function activeUser($user_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
 
@@ -139,10 +155,10 @@ class Admin extends CI_Controller {
 	public function disableUser($user_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -168,10 +184,10 @@ class Admin extends CI_Controller {
 	public function deleteUser($user_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -197,10 +213,10 @@ class Admin extends CI_Controller {
     public function getAllAds() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -215,10 +231,10 @@ class Admin extends CI_Controller {
     public function createAd() {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
 
@@ -231,10 +247,10 @@ class Admin extends CI_Controller {
     public function editAd($ad_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
 
@@ -249,10 +265,10 @@ class Admin extends CI_Controller {
 	public function activeAd($ad_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
 
@@ -278,10 +294,10 @@ class Admin extends CI_Controller {
 	public function disableAd($ad_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -307,10 +323,10 @@ class Admin extends CI_Controller {
 	public function deleteAd($ad_id) {
         $user_data = $this->session->get_userdata();
         if ( !$user_data ) {
-            redirect('login');
+            redirect('../login');
         } else {
             if ( !isset($user_data['id']) ) {
-                redirect('login');
+                redirect('../login');
             }
         }
         
@@ -355,7 +371,7 @@ class Admin extends CI_Controller {
             if ( $result['error_type'] == 0 ) {
                 $this->flash_data['alerts']['success'][] = 'Successfully stored.';
                 $this->session->set_flashdata('flash_data', $this->flash_data);
-                redirect('ads');
+                redirect('../ads');
             } else if ( $result['error_type'] == -1 ) {
                 $this->flash_data['alerts']['info'][] = 'The process of image uploading is failed. Pleas try again.';
             } else if ( $result['error_type'] == -2 ) {

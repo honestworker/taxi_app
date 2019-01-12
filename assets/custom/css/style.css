@@ -1,3 +1,10 @@
+.landing-section {
+    background-image: url(../images/banner.jpg)!important;
+    background-size: cover!important;
+    background-position: 0 0px!important;
+    background-attachment: fixed!important;
+    background-repeat: no-repeat!important;
+}
 .thumb {
     max-height: 350px;
     max-width: 350px;

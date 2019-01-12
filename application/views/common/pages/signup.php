@@ -12,7 +12,7 @@
 
     <div class="register-box-body">
         <div class="register-logo">
-            <img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/icon.jpg">
+			<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/logo.png">
         </div>
         <form action="<?php echo site_url('signup');?>" method="post">
             <div class="form-group has-feedback">

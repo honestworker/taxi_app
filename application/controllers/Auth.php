@@ -59,7 +59,7 @@ class Auth extends CI_Controller {
         $this->session->set_flashdata('flash_data', $this->flash_data);
 
         if ( $result['error_type'] == 0 ) {
-            redirect('dashboard');
+            redirect('../dashboard');
         } else {
             $this->load->view('common/layouts/header');
             $this->load->view('common/pages/login');
@@ -108,7 +108,7 @@ class Auth extends CI_Controller {
             if ( $result == 0 ) {
                 $this->flash_data['alerts']['success'][] = 'Password has been changed successfully.';
                 $this->session->set_flashdata('flash_data', $this->flash_data);
-                redirect('login');
+                redirect('../login');
             } else if ( $result == -1 ) {
                 $this->flash_data['alerts']['error'][] = 'The activation code is expired. Please try again.';
             }
@@ -179,6 +179,6 @@ class Auth extends CI_Controller {
         $this->session->unset_userdata('name');
         $this->session->unset_userdata('avatar');
         
-        redirect('login');
+        redirect('../login');
     }
 }

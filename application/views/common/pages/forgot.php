@@ -2,7 +2,7 @@
 	<!-- /.login-logo -->
 	<div class="login-box-body">
 		<div class="login-logo">
-			<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/icon.jpg">
+			<img style="height:100px;" src="<?php echo base_url();?>assets/custom/images/logo.png">
 		</div>
 		<form action="<?php echo site_url('forgot');?>" method="post">
 			<div class="form-group has-feedback">

@@ -13,6 +13,8 @@ class User_Model extends CI_Model {
         
         $this->load->library('session');
         $this->load->library('email');
+
+        $this->load->model('Smtp_Model', 'smtp');
     }
 
     private function generate_code($len = 30, $type = 'heavy') {
@@ -34,42 +36,15 @@ class User_Model extends CI_Model {
         return $ret;
     }
 
-    private function sendActiveCode( $email, $name, $code ) {
-        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
-        $this->email->to( $email );
-        $this->email->subject( 'Please active your account.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please active your account.<br/>Linke here: " . base_url() . 'active/'. $code . "<br/><br/>Thank you.");
-        $this->email->set_mailtype('html');
-        $this->email->send();
+    public function isActivated($id) {
+		if ( $user_row = $this->db->get_where('users', array('id' => $id) )->result() ) {
+            $user = $user_row[0];
+            if ( $user->status == 'activated' ) {
+                return 1;
+            }
+        }
+        return 0;
     }
-
-    private function sendChangePasswordCode( $email, $name, $code ) {
-        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
-        $this->email->to( $email );
-        $this->email->subject( 'Please change your password.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Please change your password.<br/>Linke here: " . base_url() . 'change/'. $code . "<br/><br/>Thank you.");
-        $this->email->set_mailtype('html');
-        $this->email->send();
-    }
-
-    private function sendEmailVerifyCode( $email, $name, $code ) {
-        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
-        $this->email->to( $email );
-        $this->email->subject( 'Please verify your email.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Verification Code: " . $code . "<br/><br/>Thank you.");
-        $this->email->set_mailtype('html');
-        $this->email->send();
-    }
-
-    private function sendForgotCode( $email, $name, $code ) {
-        $this->email->from( 'info@cabgomaurice.com', 'Taxi App' );
-        $this->email->to( $email );
-        $this->email->subject( 'Please change your password.' );
-        $this->email->message( "Hi, " . $name . ".<br/><br/>"  . " Verification Code: " . $code . "<br/><br/>Thank you.");
-        $this->email->set_mailtype('html');
-        $this->email->send();
-    }
-
 
     private function sendSMSCode($phone_number, $code) {
         $url = 'https://rest.nexmo.com/sms/json?' . http_build_query(
@@ -86,17 +61,6 @@ class User_Model extends CI_Model {
 
         return $response;
     }
-
-    // private function emailVerifyCode( $role, $email ) {
-	// 	if ( $user_row = $this->db->get_where('users', array('email' => $email, 'role' => $role) )->result() ) {
-    //         $user = $user_row[0];
-    //         $code = $this->generate_code(5, 'light');
-    //         $this->sendEmailVerifyCode($email, $user->first_name, $code);
-    //         return 0;
-    //     }
-
-    //     return -1;
-    // }
     
     public function emailVerify( $role, $email, $code ) {
 		if ( $user_row = $this->db->get_where('users', array('email' => $email, 'role' => $role) )->result() ) {
@@ -214,7 +178,7 @@ class User_Model extends CI_Model {
                 return -1;
             }
             $code = $this->generate_code(5, 'light');
-            $this->sendEmailVerifyCode($email, $user->first_name, $code);
+            $this->smtp->sendEmailVerifyCode($email, $user->first_name, $code);
             return 0;
         }
 
@@ -301,11 +265,11 @@ class User_Model extends CI_Model {
                 if ($user->role == 1) {
                     $code = $this->generate_code(50, 'common');
                     $this->db->update('users', array('password_code' => $code), array('id' => $user->id) );
-                    $this->sendChangePasswordCode($email, $profile->first_name, $code);
+                    $this->smtp->sendChangePasswordCode($email, $profile->first_name, $code);
                 } else {
                     $code = $this->generate_code(5, 'light');
                     $this->db->update('users', array('password_code' => $code), array('id' => $user->id) );
-                    $this->sendForgotCode($email, $profile->first_name, $code);
+                    $this->smtp->sendForgotCode($email, $profile->first_name, $code);
                 }
                 return 0;
             } else {
@@ -463,7 +427,7 @@ class User_Model extends CI_Model {
                 if ( $user->role == 1 ) {
                     $code = $this->generate_code(50, 'common');
                     $this->db->update('users', array('activation_code' => $code), array('id' => $user->id) );
-                    $this->sendActiveCode($user->email, $profile->first_name, $code);
+                    $this->smtp->sendActiveCode($user->email, $profile->first_name, $code);
                     return 0;
                 } else if ( $user->role == 2) {
                     if ( $profile->email_confirmed && $profile->phone_confirmed ) {

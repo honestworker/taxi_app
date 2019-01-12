@@ -4,10 +4,11 @@
     <div class="col-xs-12">
         <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Drivers</h3>
+            <h3 class="box-title" style="margin-top: 10px;">&nbsp;&nbsp;&nbsp;<b>Drivers</b></h3>
+            <br><br>
         </div>
         <!-- /.box-header -->
-        <div class="box-body driver-table" style="overflow: auto;">
+        <div class="box-body driver-table">
             <table id="driver_table" class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -66,20 +67,20 @@
                         ?>
                     </td>
                     <td><?php echo $driver->created_at; ?></td>
-                    <td><?php echo $driver->status; ?></td>
                     <td>
-                        <?php
-                        if ($driver->status == 'disabled') {
-                        ?>
-                            <button type="button" class="btn btn-success"><i class="fa fa-check"></i></button>
-                        <?php
-                        } else {
-                        ?>
-                            <button type="button" class="btn btn-warning"><i class="fa fa-check"></i></button>
-                        <?php
-                        }
-                        ?>
-                        <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                    <?php if ( $driver->status == 'activated' ) { ?>
+                        <span class="label label-success" style="font-size: 85%;"><?php echo $driver->status; ?></span>
+                    <?php } else { ?>
+                        <span class="label label-warning" style="font-size: 85%;"><?php echo $driver->status; ?></span>
+                    <?php } ?>
+                    </td>
+                    <td>
+                    <?php if ($driver->status == 'activated') { ?>
+                        <button type="button" class="btn btn-warning" onclick="viewActionUserModal('driver', 'disable', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } else { ?>
+                        <button type="button" class="btn btn-success" onclick="viewActionUserModal('driver', 'active', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } ?>
+                        <button type="button" class="btn btn-danger" onclick="viewActionUserModal('driver', 'delete', $(this).parent().parent().data('id'))"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             <?php
@@ -127,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary active-driver">Active</button>
+                <button type="button" class="btn btn-primary active-driver" onclick="actionUser('driver', 'active')">Active</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -150,7 +151,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning disable-driver">Disable</button>
+                <button type="button" class="btn btn-warning disable-driver" onclick="actionUser('driver', 'disable')">Disable</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -173,7 +174,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger delete-driver">Delete</button>
+                <button type="button" class="btn btn-danger delete-driver" onclick="actionUser('driver', 'delete')">Delete</button>
             </div>
         </div>
         <!-- /.modal-content -->

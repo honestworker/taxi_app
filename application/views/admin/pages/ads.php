@@ -4,12 +4,12 @@
     <div class="col-xs-12">
         <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Advertisements</h3>
+            <h3 class="box-title" style="margin-top: 10px;">&nbsp;&nbsp;&nbsp;<b>Advertisements</b></h3>
             <br><br>
             <button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> <a style="color: white;" href="<?php echo base_url(); ?>ads/create">Create Advertisement</a></button>
         </div>
         <!-- /.box-header -->
-        <div class="box-body ad-table" style="overflow: auto;">
+        <div class="box-body ad-table">
             <table id="ad_table" class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -30,21 +30,21 @@
                     <td><img src="<?php echo (base_url() . 'public/images/ads/' . $ad->image); ?>" style="height: 100px;"></td>
                     <td><?php echo $ad->link; ?></td>
                     <td><?php echo $ad->created_at; ?></td>
-                    <td><?php echo $ad->status; ?></td>
                     <td>
-                        <button type="button" class="btn btn-info"><a style="color: white;" href="<?php echo base_url() . 'ads/edit/' . $ad->id;?>"><i class="fa fa-eye"></i></a></button>
-                        <?php
-                        if ($ad->status == 'disabled') {
-                        ?>
-                            <button type="button" class="btn btn-success"><i class="fa fa-check"></i></button>
-                        <?php
-                        } else {
-                        ?>
-                            <button type="button" class="btn btn-warning"><i class="fa fa-check"></i></button>
-                        <?php
-                        }
-                        ?>
-                        <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                    <?php if ( $ad->status == 'active' ) { ?>
+                        <span class="label label-success" style="font-size: 85%;"><?php echo $ad->status; ?></span>
+                    <?php } else { ?>
+                        <span class="label label-warning" style="font-size: 85%;"><?php echo $ad->status; ?></span>
+                    <?php } ?>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info"><a style="color: white;" href="<?php echo base_url() . 'ads/edit/' . $ad->id;?>"><i class="fa fa-eye"></i></a></button>                        
+                    <?php if ($ad->status == 'active') { ?>
+                        <button type="button" class="btn btn-warning" onclick="viewActionAdModal('ad', 'disable', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } else { ?>
+                        <button type="button" class="btn btn-success" onclick="viewActionAdModal('ad', 'active', $(this).parent().parent().data('id'))"><i class="fa fa-check"></i></button>
+                    <?php } ?>
+                        <button type="button" class="btn btn-danger" onclick="viewActionAdModal('ad', 'delete', $(this).parent().parent().data('id'))"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             <?php
@@ -88,7 +88,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary active-ad">Active</button>
+                <button type="button" class="btn btn-primary active-ad" onclick="actionAd('ad', 'active')">Active</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -111,7 +111,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning disable-ad">Disable</button>
+                <button type="button" class="btn btn-warning disable-ad" onclick="actionAd('ad', 'disable')">Disable</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -134,7 +134,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger delete-ad">Delete</button>
+                <button type="button" class="btn btn-danger delete-ad" onclick="actionAd('ad', 'delete')">Delete</button>
             </div>
         </div>
         <!-- /.modal-content -->
